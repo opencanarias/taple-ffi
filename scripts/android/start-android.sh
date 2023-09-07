@@ -19,7 +19,7 @@ mkdir ../android/jniLibs
 for ((i=0;i<3;i++))
 do
     mkdir ../android/jniLibs/"${architectures_android[i]}"
-    cp target/"${architectures[i]}-linux-android"/release/libtest.so ../android/jniLibs/"${architectures_android[i]}"/libuniffi_test.so
+    cp target/"${architectures[i]}-linux-android"/release/libtaple_ffi.so ../android/jniLibs/"${architectures_android[i]}"/libuniffi_taple_sdk.so
 done
 
 # Generando la traducción a Kotlin
