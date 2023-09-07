@@ -35,8 +35,8 @@ $ ./scripts/android/start-android.sh
 **NOTE**: Rust Nightly is needed for iOS compilation. In this case, the last two commands must be replaced:
 
 ```bash
-$ ./scripts/android/setup-ios.sh
-$ ./scripts/android/start-ios.sh
+$ ./scripts/ios/setup-ios.sh
+$ ./scripts/ios/start-ios.sh
 ```
 
 ## Usage
