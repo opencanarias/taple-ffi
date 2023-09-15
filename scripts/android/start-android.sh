@@ -23,7 +23,7 @@ do
     rust_target="$key-linux-android"
     android_target="${architectures[$key]}"
     lib_path="target/$rust_target/$mode/$lib_name"
-    lib_final_path="$final_dir/$android_target"
+    lib_final_path="$final_dir/libs/$android_target"
 
     echo "Compiling architecture: $rust_target/$android_target"
     cross build --features android --target "$rust_target" --"$mode"
