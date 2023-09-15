@@ -9,33 +9,32 @@ architectures[aarch64]="arm64-v8a"
 #architectures[x86_64]="x86_64"
 #architectures[i686]="x86"
 
+lib_name="libtaple_ffi.so"
+root_dir=$(pwd)
+final_dir=$root_dir/target/android
+taple_dir=$root_dir/taple
+bindgen_dir=$root_dir/uniffi-bindgen
+udl_path=$taple_dir/src/taple_sdk.udl
+
 echo "Compiling ..."
-cd taple
+cd $taple_dir
 for key in "${!architectures[@]}"
 do
     rust_target="$key-linux-android"
     android_target="${architectures[$key]}"
-    lib_name="libtaple_ffi.so"
-    lib_compiled_path="target/$rust_target/$mode/$lib_name"
-    lib_end_path="../target/android/$android_target"
+    lib_path="target/$rust_target/$mode/$lib_name"
+    lib_final_path="$final_dir/$android_target"
 
-    echo "Compiling architecture: $rust_target"
-    cross build --features android --locked --target "$rust_target" --"$mode"
+    echo "Compiling architecture: $rust_target/$android_target"
+    cross build --features android --target "$rust_target" --"$mode"
 
-    echo "Copying lib to $lib_end_path"
-    mkdir -p $lib_end_path
-    cp $lib_compiled_path $lib_end_path
+    echo "Copying $lib_name for $android_target to $lib_final_path"
+    mkdir -p $lib_final_path
+    cp $lib_path $lib_final_path
 done
 
 echo "Generating Kotling bindings"
-cd ../uniffi-bindgen
-cargo run --bin uniffi-bindgen generate ../taple/src/taple_sdk.udl --out-dir ../taple/target/ --language kotlin
+cd $bindgen_dir
+cargo run --bin uniffi-bindgen generate $udl_path --out-dir $final_dir --language kotlin
 
-: << com
-
-
-echo "Copiando el .kt en el proyecto Android"
-cd ../taple
-cp target/uniffi/taple_sdk/taple_sdk.kt ../android
-com
 
