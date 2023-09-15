@@ -1,33 +1,41 @@
 #!/bin/bash
-# Definiendo las arquitecturas
-architectures=(x86_64 aarch64 i686)
-architectures_android=(x86_64 arm64-v8a x86)
 
-# Compilando la librería para las distintas arquitecturas (x86-64, arm64-v8a, x86)
-echo "Iniciando compilacion ..."
-cd UniFFI
-for ((i=0;i<3;i++))
+# Compilation mode: release/debug
+mode="release"
+
+# Architectures to compile. Comment on those you do not want to compile
+declare -A architectures
+architectures[aarch64]="arm64-v8a"
+#architectures[x86_64]="x86_64"
+#architectures[i686]="x86"
+
+echo "Compiling ..."
+cd taple
+for key in "${!architectures[@]}"
 do
-    echo "Compilando librería para arquitectura ${architectures[i]}"
-    cross build --features android --target "${architectures[i]}-linux-android" --release 
+    rust_target="$key-linux-android"
+    android_target="${architectures[$key]}"
+    lib_name="libtaple_ffi.so"
+    lib_compiled_path="target/$rust_target/$mode/$lib_name"
+    lib_end_path="../target/android/$android_target"
+
+    echo "Compiling architecture: $rust_target"
+    cross build --features android --locked --target "$rust_target" --"$mode"
+
+    echo "Copying lib to $lib_end_path"
+    mkdir -p $lib_end_path
+    cp $lib_compiled_path $lib_end_path
 done
 
-# Copiando librerías compiladas en el proyecto Android
-echo "Copiando librerías en el proyecto Android"
-mkdir ../android
-mkdir ../android/jniLibs
-for ((i=0;i<3;i++))
-do
-    mkdir ../android/jniLibs/"${architectures_android[i]}"
-    cp target/"${architectures[i]}-linux-android"/release/libtaple_ffi.so ../android/jniLibs/"${architectures_android[i]}"/libuniffi_taple_sdk.so
-done
+echo "Generating Kotling bindings"
+cd ../uniffi-bindgen
+cargo run --bin uniffi-bindgen generate ../taple/src/taple_sdk.udl --out-dir ../taple/target/ --language kotlin
 
-# Generando la traducción a Kotlin
-echo "Generando traducción a Kotlin"
-cd ../UniFFI-Bindgen
-cargo run --features=uniffi/cli --bin uniffi-bindgen generate ../UniFFI/src/taple_sdk.udl --out-dir ../UniFFI/target/ --language kotlin
+: << com
 
-# Copiando .kt en el proyecto Android
+
 echo "Copiando el .kt en el proyecto Android"
-cd ../UniFFI
+cd ../taple
 cp target/uniffi/taple_sdk/taple_sdk.kt ../android
+com
+

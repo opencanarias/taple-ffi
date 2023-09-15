@@ -1,0 +1,36 @@
+[package]
+name = "taple-ffi"
+version = "0.3.0-dev"
+edition = "2021"
+
+[lib]
+name = "taple_ffi"
+# https://github.com/imWildCat/uniffi-rs-fullstack-examples/blob/main/hello/Cargo.toml
+crate-type = [
+  "staticlib", # must for iOS
+  "cdylib",    # must for Android
+]
+
+[dependencies]
+taple-core = { path = "../../taple-core/core" }
+hex = "0.4.3"
+uniffi = "0.23.0"
+android_logger = {version = "0.13.3", optional = true}
+oslog = {version = "0.2.0", optional = true}
+log = "0.4"
+tokio = { version = "1.20", features = ["sync", "rt-multi-thread"] }
+thiserror = "1"
+serde = { version = "1.0.100", default-features = false }
+serde_json = { version = "1.0.97" }
+borsh = "0.10.3"
+
+[package.metadata.cross.build.env]
+# https://github.com/cross-rs/cross/issues/1181
+volumes = ["__LIB12_DEP=../../taple-core"]
+
+[build-dependencies]
+uniffi = { version = "0.23.0", features = ["build"] }
+
+[features]
+android = ["dep:android_logger"]
+ios = ["dep:oslog"]
