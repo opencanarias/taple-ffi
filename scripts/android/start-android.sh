@@ -16,7 +16,6 @@ taple_dir=$root_dir/taple_ffi
 bindgen_dir=$root_dir/uniffi-bindgen
 udl_path=$taple_dir/src/taple_ffi.udl
 
-echo "Compiling ..."
 cd $taple_dir
 for key in "${!architectures[@]}"
 do
