@@ -12,9 +12,9 @@ architectures[aarch64]="arm64-v8a"
 lib_name="libtaple_ffi.so"
 root_dir=$(pwd)
 final_dir=$root_dir/target/android
-taple_dir=$root_dir/taple
+taple_dir=$root_dir/taple_ffi
 bindgen_dir=$root_dir/uniffi-bindgen
-udl_path=$taple_dir/src/taple_sdk.udl
+udl_path=$taple_dir/src/taple_ffi.udl
 
 echo "Compiling ..."
 cd $taple_dir
@@ -28,7 +28,7 @@ do
     echo "Compiling architecture: $rust_target/$android_target"
     cross build --features android --target "$rust_target" --"$mode"
 
-    echo "Copying $lib_name for $android_target to $lib_final_path"
+    echo "Copying $lib_name($android_target) to $lib_final_path"
     mkdir -p $lib_final_path
     cp $lib_path $lib_final_path
 done

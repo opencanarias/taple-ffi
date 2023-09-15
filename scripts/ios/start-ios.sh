@@ -17,7 +17,7 @@ cargo +nightly build -Z build-std --features ios --lib --release --target x86_64
 
 echo -e "${GREEN}Generating swift binding ..."
 cd ../UniFFI-Bindgen
-cargo run --features=uniffi/cli --bin uniffi-bindgen generate  ../UniFFI/src/${LIB_NAME}.udl --out-dir ../UniFFI/target/ --language swift 
+cargo run --bin uniffi-bindgen generate  ../UniFFI/src/${LIB_NAME}.udl --out-dir ../UniFFI/target/ --language swift 
 sed -i '' 's/module\ ${LIB_NAME}FFI/framework\ module\ ${LIB_NAME}FFI/' ../UniFFI/target/${LIB_NAME}FFI.modulemap
 
 echo -e "${GREEN}Copying resources..."

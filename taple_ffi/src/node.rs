@@ -5,9 +5,9 @@ use tokio::runtime::Runtime;
 
 use crate::{
     api::{create_taple_api, TapleAPI},
+    db::{WrapperCollection, WrapperManager},
     notification::TapleNotification,
     shutdown::ShutdownSignal,
-    sqlite::{WrapperCollection, WrapperManager},
     subject_builder::SubjectBuilder,
     NotificationError, TapleError,
 };
