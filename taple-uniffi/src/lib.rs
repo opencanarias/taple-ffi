@@ -130,4 +130,4 @@ pub fn start(
     })
 }
 
-uniffi::include_scaffolding!("taple_ffi");
+uniffi::include_scaffolding!("taple_uniffi");

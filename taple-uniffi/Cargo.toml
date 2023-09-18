@@ -1,10 +1,10 @@
 [package]
-name = "taple-ffi"
+name = "taple-uniffi"
 version = "0.3.0-dev"
 edition = "2021"
 
 [lib]
-name = "taple_ffi"
+name = "taple_uniffi"
 # https://github.com/imWildCat/uniffi-rs-fullstack-examples/blob/main/hello/Cargo.toml
 crate-type = [
   "staticlib", # must for iOS
@@ -12,7 +12,8 @@ crate-type = [
 ]
 
 [dependencies]
-taple-core = { path = "../../taple-core/core" }
+# taple-core = { path = "../../taple-core/core" }
+taple-core = { git = "https://github.com/opencanarias/taple-core"}
 hex = "0.4.3"
 uniffi = "0.23.0"
 android_logger = {version = "0.13.3", optional = true}
@@ -25,8 +26,8 @@ serde_json = { version = "1.0.97" }
 borsh = "0.10.3"
 
 [package.metadata.cross.build.env]
-# https://github.com/cross-rs/cross/issues/1181
-volumes = ["__LIB12_DEP=../../taple-core"]
+# Uncomment for local development. https://github.com/cross-rs/cross/issues/1181
+# volumes = ["__LIB12_DEP=../../taple-core"]
 
 [build-dependencies]
 uniffi = { version = "0.23.0", features = ["build"] }

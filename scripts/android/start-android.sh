@@ -9,12 +9,12 @@ architectures[aarch64]="arm64-v8a"
 #architectures[x86_64]="x86_64"
 #architectures[i686]="x86"
 
-lib_name="libtaple_ffi.so"
+lib_name="libtaple_uniffi.so"
 root_dir=$(pwd)
 final_dir=$root_dir/target/android
-taple_dir=$root_dir/taple_ffi
+taple_dir=$root_dir/taple-uniffi
 bindgen_dir=$root_dir/uniffi-bindgen
-udl_path=$taple_dir/src/taple_ffi.udl
+udl_path=$taple_dir/src/taple_uniffi.udl
 
 cd $taple_dir
 for key in "${!architectures[@]}"

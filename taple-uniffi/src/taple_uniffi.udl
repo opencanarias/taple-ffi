@@ -422,7 +422,7 @@ dictionary TapleSettings {
   sequence<string> known_nodes;
 };
 
-namespace taple_ffi {
+namespace taple_uniffi {
   [Throws=InitializationError]
   TapleNode start(DatabaseManagerInterface manager, TapleSettings settings);
   sequence<u8> generate_key(TapleKeyDerivator key_derivator);
