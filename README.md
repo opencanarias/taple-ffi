@@ -27,20 +27,19 @@ Minimium supported rust versión (MSRV) is 1.67.
 ### Compile
 ```bash
 $ git clone https://github.com/opencanarias/taple-ffi.git
-$ cd taple-ffi/taple-uniffi
 $ sudo apt install -y libprotobuf-dev protobuf-compiler cmake
+$ cd taple-ffi
 $ cargo build --release
-$ mkdir ../target
-$ cp ./target/release/libtaple_uniffi.a ../target
-$ cp ./target/release/libtaple_uniffi.so ../target
+$ ls ./target/release
 ```
 
 ### Generate bindings
+Any [Uniffi supported language](https://mozilla.github.io/uniffi-rs/Overview.html#supported-languages) with callback interfaces support can be used. For instance:
 ```bash
-$ cd ../uniffi-bindgen
-$ cargo run --bin uniffi-bindgen generate ../taple-uniffi/src/taple_uniffi.udl --out-dir ../target --language kotlin
+$ cargo run --bin uniffi-bindgen generate ./src/taple_uniffi.udl --out-dir ./target/bindings/kotlin --language kotlin
+$ cargo run --bin uniffi-bindgen generate ./src/taple_uniffi.udl --out-dir ./target/bindings/swift --language swift
+$ cargo run --bin uniffi-bindgen generate ./src/taple_uniffi.udl --out-dir ./target/bindings/python --language python
 ```
-Any [Uniffi supported language](https://mozilla.github.io/uniffi-rs/Overview.html#supported-languages) can be used instead of Kotlin.
 
 ## Documentation and examples
 Documentation and examples are under development. If you need more information, check out the following resources. 

@@ -11,11 +11,15 @@ crate-type = [
   "cdylib",    # must for Android
 ]
 
+[[bin]]
+name = "uniffi-bindgen"
+path = "uniffi-bindgen.rs"
+
 [dependencies]
 # taple-core = { path = "../../taple-core/core" }
 taple-core = { git = "https://github.com/opencanarias/taple-core"}
 hex = "0.4.3"
-uniffi = "0.23.0"
+uniffi = { version = "0.23.0", features = ["cli"] }
 android_logger = {version = "0.13.3", optional = true}
 oslog = {version = "0.2.0", optional = true}
 log = "0.4"
