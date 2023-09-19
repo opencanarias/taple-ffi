@@ -1,8 +1,8 @@
-use std::{sync::{Arc, RwLock}};
+use std::sync::{Arc, RwLock};
 
 use api::TapleAPI;
 use models::{event::TapleSignedEvent, user_governance::UserGovernance, user_subject::UserSubject};
-use notification::{TapleNotification};
+use notification::TapleNotification;
 use settings::TapleSettings;
 use taple_core::{
     crypto::{Ed25519KeyPair, KeyGenerator, KeyMaterial, KeyPair, Secp256k1KeyPair},
@@ -10,20 +10,24 @@ use taple_core::{
 };
 use tokio::runtime::Runtime;
 mod api;
+mod db;
 mod error;
 mod models;
+mod node;
 mod notification;
 mod settings;
 mod shutdown;
-mod sqlite;
 mod subject_builder;
-mod node;
 
 pub use shutdown::ShutdownSignal;
 use std::fmt::Debug;
 
+use db::WrapperManager;
+pub use db::{
+    DatabaseManagerInterface, DbCollectionInterface, DbCollectionIteratorInterface, Tuple,
+};
 pub use error::{
-    InitializationError, NotificationError, SQLiteError, SettingsError, ShutdownError, TapleError,
+    DbError, InitializationError, NotificationError, SettingsError, ShutdownError, TapleError,
 };
 pub use models::approval::{
     TapleApprovalRequest, TapleApprovalResponse, TapleSignedApprovalRequest,
@@ -41,14 +45,10 @@ pub use models::role::{Role, RoleEnum, SchemaEnum, Who};
 pub use models::schema::Schema;
 pub use models::signature::TapleSignature;
 pub use models::validation_proof::ValidationProof;
-pub use sqlite::{
-    DatabaseManagerInterface, DbCollectionInterface, DbCollectionIteratorInterface, Tuple,
-};
-pub use node::{TapleNode, NotificationHandlerInterface};
-use sqlite::{WrapperManager};
+pub use node::{NotificationHandlerInterface, TapleNode};
 use subject_builder::SubjectBuilder;
 
-use crate::{models::others::TapleKeyDerivator};
+use crate::models::others::TapleKeyDerivator;
 
 pub fn generate_key(key_derivator: TapleKeyDerivator) -> Vec<u8> {
     match key_derivator {
@@ -121,15 +121,13 @@ pub fn start(
                     api,
                     keypair.clone(),
                     RwLock::new(Some(taple)),
-                    rt.clone()
+                    rt.clone(),
                 ));
                 Ok(node)
             }
-            Err(error) => {
-                Err(InitializationError::StartFailed(error.to_string()))
-            }
+            Err(error) => Err(InitializationError::StartFailed(error.to_string())),
         }
     })
 }
 
-uniffi::include_scaffolding!("taple_sdk");
+uniffi::include_scaffolding!("taple_uniffi");

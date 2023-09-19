@@ -1,7 +1,4 @@
-*/target
-*/Cargo.lock
+**/.vscode
+**/target
+**/Cargo.lock
 ._*
-android
-!scripts/android
-ios
-!scripts/ios

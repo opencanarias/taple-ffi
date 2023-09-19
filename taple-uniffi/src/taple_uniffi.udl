@@ -1,7 +1,7 @@
 [Error]
-enum SQLiteError {
+enum DbError {
   "KeyElementsError",
-  "InternalSQLiteError"
+  "InternalDbError"
 };
 
 [Error]
@@ -189,16 +189,16 @@ dictionary Tuple {
 };
 
 callback interface DbCollectionIteratorInterface {
-  [Throws=SQLiteError]
+  [Throws=DbError]
   Tuple? next();
 };
 
 callback interface DbCollectionInterface {
-  [Throws=SQLiteError]
+  [Throws=DbError]
   sequence<u8>? get(string key);
-  [Throws=SQLiteError]
+  [Throws=DbError]
   void put(string key, sequence<u8> value);
-  [Throws=SQLiteError]
+  [Throws=DbError]
   void del(string key);
   DbCollectionIteratorInterface iter(boolean reverse, string prefix);
 };
@@ -422,7 +422,7 @@ dictionary TapleSettings {
   sequence<string> known_nodes;
 };
 
-namespace taple_sdk {
+namespace taple_uniffi {
   [Throws=InitializationError]
   TapleNode start(DatabaseManagerInterface manager, TapleSettings settings);
   sequence<u8> generate_key(TapleKeyDerivator key_derivator);

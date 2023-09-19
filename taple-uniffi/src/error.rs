@@ -27,7 +27,7 @@ pub enum TapleError {
     #[error("Deserialization error")]
     DeserializationError,
     #[error("Incorrect format of governance properties")]
-    IncorrectGovernanceProperties
+    IncorrectGovernanceProperties,
 }
 
 impl From<uniffi::UnexpectedUniFFICallbackError> for TapleError {
@@ -37,16 +37,16 @@ impl From<uniffi::UnexpectedUniFFICallbackError> for TapleError {
 }
 
 #[derive(Error, Debug)]
-pub enum SQLiteError {
+pub enum DbError {
     #[error("General error")]
     KeyElementsError,
     #[error("Internal error")]
-    InternalSQLiteError,
+    InternalDbError,
 }
 
-impl From<uniffi::UnexpectedUniFFICallbackError> for SQLiteError {
+impl From<uniffi::UnexpectedUniFFICallbackError> for DbError {
     fn from(_: uniffi::UnexpectedUniFFICallbackError) -> Self {
-        Self::InternalSQLiteError
+        Self::InternalDbError
     }
 }
 

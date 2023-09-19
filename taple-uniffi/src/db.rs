@@ -1,4 +1,4 @@
-use crate::{error::SQLiteError};
+use crate::error::DbError;
 use std::fmt::Debug;
 use taple_core::{DatabaseCollection, DatabaseManager};
 
@@ -9,13 +9,13 @@ pub struct Tuple {
 }
 
 pub trait DbCollectionIteratorInterface: Send + Sync + Debug {
-    fn next(&self) -> Result<Option<Tuple>, SQLiteError>;
+    fn next(&self) -> Result<Option<Tuple>, DbError>;
 }
 
 pub trait DbCollectionInterface: Send + Sync + Debug {
-    fn get(&self, key: String) -> Result<Option<Vec<u8>>, SQLiteError>;
-    fn put(&self, key: String, value: Vec<u8>) -> Result<(), SQLiteError>;
-    fn del(&self, key: String) -> Result<(), SQLiteError>;
+    fn get(&self, key: String) -> Result<Option<Vec<u8>>, DbError>;
+    fn put(&self, key: String, value: Vec<u8>) -> Result<(), DbError>;
+    fn del(&self, key: String) -> Result<(), DbError>;
     fn iter(&self, reverse: bool, prefix: String) -> Box<dyn DbCollectionIteratorInterface>;
 }
 
