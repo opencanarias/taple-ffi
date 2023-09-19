@@ -6,8 +6,8 @@ mode="release"
 # Architectures to compile. Comment on those you do not want to compile
 declare -A architectures
 architectures[aarch64]="arm64-v8a"
-#architectures[x86_64]="x86_64"
-#architectures[i686]="x86"
+architectures[x86_64]="x86_64"
+architectures[i686]="x86"
 
 lib_name="libtaple_uniffi.so"
 root_dir=$(pwd)
