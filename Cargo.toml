@@ -1,10 +1,10 @@
 [package]
-name = "taple-uniffi"
+name = "taple-ffi"
 version = "0.3.0-dev"
 edition = "2021"
 
 [lib]
-name = "taple_uniffi"
+name = "taple_ffi"
 # https://github.com/imWildCat/uniffi-rs-fullstack-examples/blob/main/hello/Cargo.toml
 crate-type = [
   "staticlib", # must for iOS
