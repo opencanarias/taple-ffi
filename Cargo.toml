@@ -17,7 +17,8 @@ path = "uniffi-bindgen.rs"
 
 [dependencies]
 # taple-core = { path = "../taple-core/core" }
-taple-core = { git = "https://github.com/opencanarias/taple-core", branch = "release-0.3"}
+# taple-core = { git = "https://github.com/opencanarias/taple-core", branch = "release-0.3"}
+taple-core = { version="0.3" }
 hex = "0.4.3"
 uniffi = { version = "0.23.0", features = ["cli"] }
 android_logger = {version = "0.13.3", optional = true}
