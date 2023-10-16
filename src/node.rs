@@ -1,6 +1,6 @@
 use std::sync::{Arc, RwLock};
 
-use taple_core::{crypto::KeyPair, Api, Node};
+use taple_core::{crypto::KeyPair, Api, DigestDerivator, Node};
 use tokio::runtime::Runtime;
 
 use crate::{
@@ -22,6 +22,7 @@ pub struct TapleNode {
     keypair: KeyPair,
     taple: RwLock<Option<Node<WrapperManager, WrapperCollection>>>,
     runtime: Arc<Runtime>,
+    derivator: DigestDerivator,
 }
 
 impl TapleNode {
@@ -31,6 +32,7 @@ impl TapleNode {
         keypair: KeyPair,
         taple: RwLock<Option<Node<WrapperManager, WrapperCollection>>>,
         runtime: Arc<Runtime>,
+        derivator: DigestDerivator,
     ) -> Self {
         Self {
             shutdown_sender,
@@ -38,6 +40,7 @@ impl TapleNode {
             keypair,
             taple,
             runtime,
+            derivator,
         }
     }
 
@@ -46,6 +49,7 @@ impl TapleNode {
             self.api.clone(),
             self.runtime.clone(),
             self.keypair.clone(),
+            self.derivator,
         ))
     }
 
@@ -133,6 +137,7 @@ impl TapleNode {
             keys: sb_keys,
             name: RwLock::new(None),
             namespace: RwLock::new(None),
+            derivator: self.derivator,
         })
     }
 }

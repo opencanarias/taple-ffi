@@ -35,7 +35,9 @@ pub use models::approval::{
 };
 pub use models::approval_entity::{TapleApprovalEntity, TapleApprovalState};
 pub use models::event::TapleEvent;
-pub use models::others::{SubjectAndProviders, ValidationProofAndSignatures};
+pub use models::others::{
+    SubjectAndProviders, TapleDigestDerivator, TapleKeyDerivator, ValidationProofAndSignatures,
+};
 pub use models::policy::{Policy, Quorum, Validation};
 pub use models::request::{
     EOLRequest, EventRequestType, TapleRequest, TapleRequestState, TapleSignedEventRequest,
@@ -47,8 +49,6 @@ pub use models::signature::TapleSignature;
 pub use models::validation_proof::ValidationProof;
 pub use node::{NotificationHandlerInterface, TapleNode};
 use subject_builder::SubjectBuilder;
-
-use crate::models::others::TapleKeyDerivator;
 
 pub fn generate_key(key_derivator: TapleKeyDerivator) -> Vec<u8> {
     match key_derivator {
@@ -96,6 +96,7 @@ pub fn start(
         }
     };
 
+    let derivator_copy = settings.derivator.clone();
     let settings = settings.try_into().unwrap();
     // .map_err(|e| InitializationError::InvalidSettings(e.to_string()))?;
 
@@ -122,6 +123,7 @@ pub fn start(
                     keypair.clone(),
                     RwLock::new(Some(taple)),
                     rt.clone(),
+                    derivator_copy.into(),
                 ));
                 Ok(node)
             }

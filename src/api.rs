@@ -5,11 +5,8 @@ use std::{
 };
 
 use taple_core::{
-    crypto::{KeyPair},
-    request::EventRequest as TapleEventRequestType,
-    signature::Signature,
-    ApiError, DigestIdentifier, KeyDerivator, KeyIdentifier,
-    Api, Derivable,
+    crypto::KeyPair, request::EventRequest as TapleEventRequestType, signature::Signature, Api,
+    ApiError, Derivable, DigestDerivator, DigestIdentifier, KeyDerivator, KeyIdentifier,
 };
 use tokio::runtime::Runtime;
 
@@ -28,10 +25,21 @@ pub struct TapleAPI {
     pub api: Api,
     pub runtime: Arc<Runtime>,
     keys: KeyPair,
+    derivator: DigestDerivator,
 }
 
-pub fn create_taple_api(api: Api, runtime: Arc<Runtime>, keys: KeyPair) -> TapleAPI {
-    TapleAPI { api, runtime, keys }
+pub fn create_taple_api(
+    api: Api,
+    runtime: Arc<Runtime>,
+    keys: KeyPair,
+    derivator: DigestDerivator,
+) -> TapleAPI {
+    TapleAPI {
+        api,
+        runtime,
+        keys,
+        derivator,
+    }
 }
 
 fn error_conversion(error: ApiError) -> TapleError {
@@ -91,6 +99,7 @@ impl TapleAPI {
                         self.runtime.clone(),
                         RwLock::new(Some(s)),
                         None,
+                        self.derivator,
                     ))
                 })
                 .collect())
@@ -119,6 +128,7 @@ impl TapleAPI {
                         self.runtime.clone(),
                         RwLock::new(Some(s)),
                         None,
+                        self.derivator,
                     ))
                 })
                 .collect())
@@ -151,6 +161,7 @@ impl TapleAPI {
                         self.runtime.clone(),
                         RwLock::new(Some(s)),
                         None,
+                        self.derivator,
                     ))
                 })
                 .collect())
@@ -209,6 +220,7 @@ impl TapleAPI {
                 self.runtime.clone(),
                 RwLock::new(Some(subject)),
                 None,
+                self.derivator,
             )))
         })
     }
@@ -295,9 +307,12 @@ impl TapleAPI {
         &self,
         event_request: EventRequestType,
     ) -> Result<TapleSignature, TapleError> {
-        let event_signature =
-            Signature::new::<TapleEventRequestType>(&event_request.try_into()?, &self.keys)
-                .map_err(|e| TapleError::SignatureGenerationFailed(e.to_string()))?;
+        let event_signature = Signature::new::<TapleEventRequestType>(
+            &event_request.try_into()?,
+            &self.keys,
+            self.derivator,
+        )
+        .map_err(|e| TapleError::SignatureGenerationFailed(e.to_string()))?;
         Ok(event_signature.into())
     }
 }

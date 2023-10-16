@@ -7,7 +7,7 @@ use taple_core::{
     crypto::KeyPair,
     request::StartRequest,
     signature::{Signature, Signed},
-    Api, DigestIdentifier, EventRequest, KeyDerivator,
+    Api, DigestDerivator, DigestIdentifier, EventRequest, KeyDerivator,
 };
 use tokio::runtime::Runtime;
 
@@ -22,6 +22,7 @@ pub struct SubjectBuilder {
     pub keys: KeyPair,
     pub name: RwLock<Option<String>>,
     pub namespace: RwLock<Option<String>>,
+    pub(crate) derivator: DigestDerivator,
 }
 
 impl SubjectBuilder {
@@ -96,13 +97,16 @@ impl SubjectBuilder {
                         public_key: subject_key_identifier.clone(),
                     });
 
-                    let event_signed = match Signature::new(&create_event, &self.keys) {
-                        Ok(signature) => Signed {
-                            content: create_event,
-                            signature,
-                        },
-                        Err(e) => return Err(TapleError::SignatureGenerationFailed(e.to_string())),
-                    };
+                    let event_signed =
+                        match Signature::new(&create_event, &self.keys, self.derivator) {
+                            Ok(signature) => Signed {
+                                content: create_event,
+                                signature,
+                            },
+                            Err(e) => {
+                                return Err(TapleError::SignatureGenerationFailed(e.to_string()))
+                            }
+                        };
 
                     let request_id = self
                         .api
@@ -128,6 +132,7 @@ impl SubjectBuilder {
                         subject_runtime,
                         RwLock::new(None),
                         Some(request_id),
+                        self.derivator,
                     )))
                 }
                 Err(e) => Err(TapleError::ExecutionError(e.to_string())),

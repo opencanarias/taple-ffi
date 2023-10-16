@@ -16,6 +16,7 @@ name = "uniffi-bindgen"
 path = "uniffi-bindgen.rs"
 
 [dependencies]
+memsecurity = "3.4.0"
 # taple-core = { path = "../../taple-core/core" }
 taple-core = { git = "https://github.com/opencanarias/taple-core"}
 hex = "0.4.3"

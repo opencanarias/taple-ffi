@@ -3,11 +3,10 @@ use std::sync::{Arc, RwLock};
 //Abstraccion del Sujeto de Taple para facilitar su uso por terceros
 use crate::{TapleError, TapleSignedEventRequest};
 use taple_core::{
-    crypto::{KeyPair},
+    crypto::KeyPair,
     request::{EOLRequest, FactRequest, RequestState},
     signature::{Signature, Signed},
-    Derivable, DigestIdentifier, EventRequest, Api,
-    SubjectData, ValueWrapper,
+    Api, Derivable, DigestDerivator, DigestIdentifier, EventRequest, SubjectData, ValueWrapper,
 };
 use tokio::runtime::Runtime;
 
@@ -19,6 +18,7 @@ pub struct UserSubject {
     pub runtime: Arc<Runtime>,
     pub subject_data: RwLock<Option<SubjectData>>,
     subject_request: Option<DigestIdentifier>,
+    derivator: DigestDerivator,
 }
 
 pub fn create_subject(
@@ -27,6 +27,7 @@ pub fn create_subject(
     runtime: Arc<Runtime>,
     subject_data: RwLock<Option<SubjectData>>,
     subject_request: Option<DigestIdentifier>,
+    derivator: DigestDerivator,
 ) -> UserSubject {
     UserSubject {
         api,
@@ -34,6 +35,7 @@ pub fn create_subject(
         runtime,
         subject_data,
         subject_request: subject_request,
+        derivator: derivator,
     }
 }
 
@@ -132,44 +134,40 @@ impl UserSubject {
                     }
                 })
             }
-            None => {
-                match &self.subject_request {
-                    Some(request) => {
-                        self.runtime.block_on(async {
-                            match self.api.get_request(request.clone()).await {
-                                Ok(event) => {
-                                    if event.state != RequestState::Finished {
-                                        return Ok(());
-                                    }
-                                    match event.subject_id {
-                                        Some(sid) => {
-                                            let subject =
-                                                self.api.get_subject(sid).await.map_err(|e| {
-                                                    TapleError::ExecutionError(e.to_string())
-                                                })?;
+            None => match &self.subject_request {
+                Some(request) => self.runtime.block_on(async {
+                    match self.api.get_request(request.clone()).await {
+                        Ok(event) => {
+                            if event.state != RequestState::Finished {
+                                return Ok(());
+                            }
+                            match event.subject_id {
+                                Some(sid) => {
+                                    let subject =
+                                        self.api.get_subject(sid).await.map_err(|e| {
+                                            TapleError::ExecutionError(e.to_string())
+                                        })?;
 
-                                            match self.subject_data.write() {
-                                                Ok(mut lock) => {
-                                                    *lock = Some(subject);
-                                                    return Ok(());
-                                                }
-                                                Err(_) => return Err(TapleError::LockIsPoisoned),
-                                            }
+                                    match self.subject_data.write() {
+                                        Ok(mut lock) => {
+                                            *lock = Some(subject);
+                                            return Ok(());
                                         }
-                                        None => {
-                                            return Err(TapleError::NotFound(
-                                                "Subject ID not found".to_owned(),
-                                            ))
-                                        }
+                                        Err(_) => return Err(TapleError::LockIsPoisoned),
                                     }
                                 }
-                                Err(e) => return Err(TapleError::ExecutionError(e.to_string())),
+                                None => {
+                                    return Err(TapleError::NotFound(
+                                        "Subject ID not found".to_owned(),
+                                    ))
+                                }
                             }
-                        })
+                        }
+                        Err(e) => return Err(TapleError::ExecutionError(e.to_string())),
                     }
-                    None => return Err(TapleError::NotFound("Event request not found".to_owned())),
-                }
-            }
+                }),
+                None => return Err(TapleError::NotFound("Event request not found".to_owned())),
+            },
         }
     }
 
@@ -261,7 +259,7 @@ impl UserSubject {
     }
 
     fn event_signing(&self, event: EventRequest) -> Result<Signed<EventRequest>, TapleError> {
-        let event_signature = Signature::new::<EventRequest>(&event, &self.keys);
+        let event_signature = Signature::new::<EventRequest>(&event, &self.keys, self.derivator);
 
         match event_signature {
             Ok(signature) => Ok(Signed {

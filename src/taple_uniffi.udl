@@ -219,6 +219,7 @@ dictionary TapleSignature {
   string signer;
   u64 timestamp;
   string value;
+  string content_hash;
 };
 
 dictionary TapleSignedEventRequest {
@@ -329,6 +330,15 @@ enum TapleKeyDerivator {
   "Secp256k1",
 };
 
+enum TapleDigestDerivator {
+  "Blake3_256",
+  "Blake3_512",
+  "SHA2_256",
+  "SHA2_512",
+  "SHA3_256",
+  "SHA3_512",
+};
+
 interface TapleAPI {
   [Throws=TapleError]
   TapleRequest get_request(string request_id);
@@ -420,6 +430,7 @@ dictionary TapleSettings {
   TapleKeyDerivator key_derivator;
   sequence<u8> private_key;
   sequence<string> known_nodes;
+  TapleDigestDerivator derivator;
 };
 
 namespace taple_ffi {

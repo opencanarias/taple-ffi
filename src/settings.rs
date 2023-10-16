@@ -1,14 +1,16 @@
-use taple_core::{
-    ListenAddr, NetworkSettings, NodeSettings, Settings as CoreSettings,
-};
+use taple_core::{ListenAddr, NetworkSettings, NodeSettings, Settings as CoreSettings};
 
-use crate::{error::SettingsError, models::others::TapleKeyDerivator};
+use crate::{
+    error::SettingsError,
+    models::others::{TapleDigestDerivator, TapleKeyDerivator},
+};
 
 pub struct TapleSettings {
     pub listen_addr: Vec<String>,
     pub key_derivator: TapleKeyDerivator,
     pub private_key: Vec<u8>,
     pub known_nodes: Vec<String>,
+    pub derivator: TapleDigestDerivator,
 }
 
 impl TryInto<CoreSettings> for TapleSettings {
